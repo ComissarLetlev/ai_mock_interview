@@ -15,7 +15,7 @@ function initFirebaseAdmin() {
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
             privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
           }
-        : require("../prepwise-demo-firebase-adminsdk-fbsvc-43e29fa432.json"); // 🔁 fallback to local key (adjust path if needed)
+        : require("../serviceAccount.json"); // 🔁 fallback to local key (adjust path if needed)
 
     initializeApp({
       credential: cert(serviceAccount),
