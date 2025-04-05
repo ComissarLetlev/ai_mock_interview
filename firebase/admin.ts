@@ -1,12 +1,21 @@
-import { initializeApp, getApps, cert } from "firebase-admin/app";
+import {
+  initializeApp,
+  getApps,
+  cert,
+  ServiceAccount,
+} from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+
+// Import the full service account file
+import localServiceAccount from "../serviceAccount.json";
 
 function initFirebaseAdmin() {
   const apps = getApps();
 
   if (!apps.length) {
-    const serviceAccount =
+    // Build service account from env, or fallback to the local JSON
+    const serviceAccount: ServiceAccount =
       process.env.FIREBASE_PRIVATE_KEY &&
       process.env.FIREBASE_CLIENT_EMAIL &&
       process.env.FIREBASE_PROJECT_ID
@@ -15,7 +24,7 @@ function initFirebaseAdmin() {
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
             privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
           }
-        : require("../serviceAccount.json"); // 🔁 fallback to local key (adjust path if needed)
+        : (localServiceAccount as ServiceAccount); // typecast to fix TS error
 
     initializeApp({
       credential: cert(serviceAccount),
