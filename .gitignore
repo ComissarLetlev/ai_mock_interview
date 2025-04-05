@@ -41,5 +41,5 @@ yarn-error.log*
 next-env.d.ts
 
 # .gitignore
-serviceAccount.json
+prepwise-demo-firebase-adminsdk-fbsvc-334cf2472a.json
 

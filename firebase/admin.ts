@@ -12,7 +12,7 @@ const serviceAccount: ServiceAccount =
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
       }
-    : require("../serviceAccount.json"); // ✅ Local fallback
+    : require("../prepwise-demo-firebase-adminsdk-fbsvc-334cf2472a.json"); // ✅ Local fallback
 
 function initFirebaseAdmin() {
   if (!getApps().length) {
