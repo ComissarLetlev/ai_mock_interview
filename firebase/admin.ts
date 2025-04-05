@@ -1,20 +1,31 @@
-import { getApps, initializeApp, cert, App } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
-let app: App;
+function initFirebaseAdmin() {
+  const apps = getApps();
 
-if (!getApps().length) {
-  app = initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
-  });
+  if (!apps.length) {
+    const serviceAccount =
+      process.env.FIREBASE_PRIVATE_KEY &&
+      process.env.FIREBASE_CLIENT_EMAIL &&
+      process.env.FIREBASE_PROJECT_ID
+        ? {
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+          }
+        : require("../prepwise-demo-firebase-adminsdk-fbsvc-43e29fa432.json"); // 🔁 fallback to local key (adjust path if needed)
+
+    initializeApp({
+      credential: cert(serviceAccount),
+    });
+  }
+
+  return {
+    auth: getAuth(),
+    db: getFirestore(),
+  };
 }
 
-const db = getFirestore();
-const auth = getAuth();
-
-export { db, auth };
+export const { auth, db } = initFirebaseAdmin();
