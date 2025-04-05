@@ -35,25 +35,28 @@ export const signUp = async (user: {
     const { uid, name, email, password } = user;
 
     // Validate the UID is provided
-    if (!uid || typeof uid !== "string") {
-      throw new Error("Invalid UID provided.");
+    if (!uid || typeof uid !== "string" || uid.trim() === "") {
+      return {
+        success: false,
+        message: "Invalid UID provided.",
+      };
     }
 
-    // Check if user exists in the Firestore database
-    const userRecord = await db.collection("users").doc(uid).get();
+    // Check if user exists in Firestore
+    const userRef = db.collection("users").doc(uid);
+    const userDoc = await userRef.get();
 
-    if (userRecord.exists) {
+    if (userDoc.exists) {
       return {
         success: false,
         message: "User already exists.",
       };
     }
 
-    // If the user doesn't exist, create the user in Firestore
-    await db.collection("users").doc(uid).set({
+    // If user doesn't exist, create the user
+    await userRef.set({
       name,
       email,
-
       createdAt: new Date().toISOString(),
     });
 
@@ -62,15 +65,14 @@ export const signUp = async (user: {
       message: "User created successfully.",
     };
   } catch (error: any) {
-    console.error("Error creating user:", error.message);
+    console.error("🔥 Error creating user:", error?.message || error);
 
     return {
       success: false,
-      message: error.message || "Unknown error occurred.",
+      message: error?.message || "Unknown error occurred.",
     };
   }
 };
-
 export async function signIn(params: SignInParams) {
   const { email, idToken } = params;
 
